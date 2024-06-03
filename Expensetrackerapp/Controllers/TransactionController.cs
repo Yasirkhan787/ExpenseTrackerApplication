@@ -1,10 +1,13 @@
 ﻿using Expensetrackerapp.Data;
 using Expensetrackerapp.Models;
+using Expensetrackerapp.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Expensetrackerapp.Controllers
 {
+    [Authorize(Roles = SD.Role_User)]
     public class TransactionController : Controller
     {
         private readonly ApplicationDbContext _context;

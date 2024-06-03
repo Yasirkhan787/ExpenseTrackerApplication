@@ -24,6 +24,11 @@ builder.Services.ConfigureApplicationCookie(options => {
     options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
 });
 
+//Register Syncfusion license
+Syncfusion.Licensing.SyncfusionLicenseProvider
+    .RegisterLicense
+    ("@32352e302e30Jx0FRu/HHmztvioVHAfz/WKKDi9JinI9KWv+shwR+qk=");
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
