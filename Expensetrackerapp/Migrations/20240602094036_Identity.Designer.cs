@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Expensetrackerapp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240602090744_Identity")]
+    [Migration("20240602094036_Identity")]
     partial class Identity
     {
         /// <inheritdoc />
