@@ -23,34 +23,40 @@ namespace Expensetrackerapp.Controllers
 
         public async Task<ActionResult> Index()
         {
-            // Last 30 Days Record 
-
-            DateTime StartDate = DateTime.Today.AddDays(-30);
+            //Last 7 Days
+            DateTime StartDate = DateTime.Today.AddDays(-6);
             DateTime EndDate = DateTime.Today;
 
             List<Transaction> SelectedTransactions = await _context.Transactions
-                 .Include(x => x.Category)
-                 .Where(y => y.Date >= StartDate && y.Date <= EndDate)
-                 .ToListAsync();
+                .Include(x => x.Category)
+                .Where(y => y.Date >= StartDate && y.Date <= EndDate)
+                .ToListAsync();
 
-             //Total Income
-             int TotalIncome = SelectedTransactions
-                 .Where(i => i.Category.Type == "Income")
-                 .Sum(j => j.Amount);
-             ViewBag.TotalIncome = TotalIncome.ToString("C0");
+            //Total Income
+            int TotalIncome = SelectedTransactions
+                .Where(i => i.Category.Type == "Income")
+                .Sum(j => j.Amount);
+            CultureInfo cultureI = CultureInfo.CreateSpecificCulture("en-US");
+            cultureI.NumberFormat.CurrencyNegativePattern = 1;
+            ViewBag.TotalIncome = String.Format(cultureI, "{0:C0}", TotalIncome);
+           //ViewBag.TotalIncome = TotalIncome.ToString("C0");
 
-             //Total Expense
-             int TotalExpense = SelectedTransactions
-                 .Where(i => i.Category.Type == "Expense")
-                 .Sum(j => j.Amount);
-             ViewBag.TotalExpense = TotalExpense.ToString("C0");
+            //Total Expense
+            int TotalExpense = SelectedTransactions
+                .Where(i => i.Category.Type == "Expense")
+                .Sum(j => j.Amount);
+            CultureInfo cultureE = CultureInfo.CreateSpecificCulture("en-US");
+            cultureE.NumberFormat.CurrencyNegativePattern = 1;
+            ViewBag.TotalExpense = String.Format(cultureE, "{0:C0}", TotalExpense);
+            //ViewBag.TotalExpense = TotalExpense.ToString("C0");
 
+            //Balance
+            int Balance = TotalIncome - TotalExpense;
+            //CultureInfo culture = CultureInfo.CreateSpecificCulture("en-US");
+            //culture.NumberFormat.CurrencyNegativePattern = 1;
+            //ViewBag.Balance = String.Format(culture, "{0:C0}", Balance);
+            ViewBag.Balance = Balance.ToString("C0");
 
-             //Balance
-             int Balance = TotalIncome - TotalExpense;
-             CultureInfo culture = CultureInfo.CreateSpecificCulture("en-US");
-             culture.NumberFormat.CurrencyNegativePattern = 1;
-             ViewBag.Balance = String.Format(culture, "{0:C0}", Balance);
             //Doughnut Chart - Expense By Category
             ViewBag.DoughnutChartData = SelectedTransactions
                 .Where(i => i.Category.Type == "Expense")
@@ -89,11 +95,11 @@ namespace Expensetrackerapp.Controllers
                 .ToList();
 
             //Combine Income & Expense
-            string[] Last30Days = Enumerable.Range(0, 32)
+            string[] Last7Days = Enumerable.Range(0, 7)
                 .Select(i => StartDate.AddDays(i).ToString("dd-MMM"))
                 .ToArray();
 
-            ViewBag.SplineChartData = from day in Last30Days
+            ViewBag.SplineChartData = from day in Last7Days
                                       join income in IncomeSummary on day equals income.day into dayIncomeJoined
                                       from income in dayIncomeJoined.DefaultIfEmpty()
                                       join expense in ExpenseSummary on day equals expense.day into expenseJoined
@@ -108,6 +114,13 @@ namespace Expensetrackerapp.Controllers
             ViewBag.RecentTransactions = await _context.Transactions
                 .Include(i => i.Category)
                 .OrderByDescending(j => j.Date)
+                .Take(5)
+                .ToListAsync();
+            
+            //Recent Transactions
+            ViewBag.RecentBudgets = await _context.Budgets
+                .Include(i => i.Category)
+                .OrderByDescending(j => j.StartDate)
                 .Take(5)
                 .ToListAsync();
 

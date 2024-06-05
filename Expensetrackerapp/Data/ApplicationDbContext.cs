@@ -14,6 +14,7 @@ namespace Expensetrackerapp.Data
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Budget> Budgets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
